@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Admin</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div>
+            User Managment
+        </div>
+        <div id="userInfo">
+
+        </div>
+        <div>
+            <button type="button" onclick="logOut()">LogOut</button>
+        </div>
+    </header>
+    <div id="myTable">
+
+    </div>
+    <div id="editForm">
+        <form>
+            <input type="text" placeholder="Username" id="userName"><br>
+            <input type="password" placeholder="Password" id="password"><br>
+            <input type="text" placeholder="First name" id="firstName"><br>
+            <input type="text" placeholder="Last name" id="lastName"><br>
+            <button type="button" onclick="updateInfo()" >Update</button>
+        </form>
+    </div>
+    <script>
+        let myInfo;
+        let auth = '';
+        if(!localStorage.getItem('auth')) {
+            let a  = document.createElement('a');
+            a.setAttribute('href', 'login.html');
+            a.click();
+        }else {
+            auth = localStorage.getItem('auth');
+            getMyInfo();
+
+        }
+
+
+        function getMyInfo() {
+            fetch('http://localhost:8080/user/getMyInfo', {
+                method: 'get',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'language': 'am',
+                    'authorization': auth
+                }
+            }).then(res=>res.json())
+                .then(res => {
+                    if(!res.error) {
+                        let elem = document.getElementById('userInfo');
+                        myInfo = res.result.data;
+                        elem.innerHTML = res.result.data.firstName + ' ' + res.result.data.lastName;
+                        getAllUsers();
+                    }
+                });
+        }
+
+
+        function getAllUsers() {
+            fetch('http://localhost:8080/user/getAll', {
+                method: 'get',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'language': 'am',
+                    'authorization': auth
+                }
+            }).then(res=>res.json())
+                .then(res => {
+                    if(!res.error) {
+                        let table = `<table><tr><th>Username</th><th>First name</th><th>Last name</th><th>Position</th> </tr>`;
+                        let myTable = document.getElementById('myTable');
+                        let editButton = '';
+                        for(let item of res.result.data) {
+                            editButton = item.id == myInfo.id ? `<button type="button" onclick="editMyInfo(myInfo.id)">  Edit</button>` : '';
+                            let  tr = `<tr><td>${item.userName}</td><td>${item.firstName}</td><td>${item.lastName}</td><td>${item.position}${editButton}</td></tr>`;
+                            table += tr;
+                        }
+                        table = table + '</table>';
+
+                        myTable.innerHTML = table;
+                    }
+                });
+        }
+
+        function editMyInfo(id) {
+            document.getElementById('editForm').style.display = 'block';
+        }
+
+        function updateInfo() {
+            let username = document.getElementById('userName').value;
+            let pass = document.getElementById('password').value;
+            let first = document.getElementById('firstName').value;
+            let last = document.getElementById('lastName').value;
+
+            fetch('http://localhost:8080/user/edit', {
+                method: 'post',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'language': 'am',
+                    'authorization': auth
+                },
+                body: JSON.stringify({userName: username, password: pass, firstName: first, lastName: last})
+            }).then(res=>res.json())
+                .then(res => {
+                    console.log(res);
+                });
+        }
+
+        function logOut() {
+            localStorage.clear();
+            let a  = document.createElement('a');
+            a.setAttribute('href', 'login.html');
+            a.click();
+        }
+
+
+    </script>
+</body>
+</html>

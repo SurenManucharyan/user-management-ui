@@ -1,0 +1,45 @@
+
+body {
+    margin: 0;
+}
+section  {
+    width: 100%;
+}
+.loginForm {
+    width: 500px;
+    margin: 0 auto;
+}
+input {
+    padding: 5px;
+    border-radius: 5px;
+    margin: 10px;
+    border: 1px solid black;
+}
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+header {
+    padding: 5px;
+    background-color: lightgray;
+    height: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    vertical-align: center;
+}
+
+#editForm {
+    display: none;
+}
